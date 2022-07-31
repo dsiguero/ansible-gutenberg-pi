@@ -20,7 +20,7 @@ jobs:
         uses: creyD/prettier_action@v4.2
         with:
           prettier_options: --write **/*.{yaml,yml,json,md}
-          commit_message: 'chore(auto): formatting'
+          commit_message: "chore(auto): formatting"
 
   ansible-lint:
     runs-on: ubuntu-latest
@@ -47,4 +47,3 @@ jobs:
           for playbook in $(find . -type f -not -path '*/\.git/*' -name '*.yaml' -maxdepth 1); do
             ansible-lint $playbook;
           done;
-  
