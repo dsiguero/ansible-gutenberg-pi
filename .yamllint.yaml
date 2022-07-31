@@ -10,3 +10,5 @@ rules:
   truthy:
     allowed-values: ["true", "false", "yes", "no"]
     check-keys: true
+  comments:
+    min-spaces-from-content: 1
