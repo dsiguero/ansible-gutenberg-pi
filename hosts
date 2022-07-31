@@ -1,0 +1,10 @@
+# octopi      ansible_host=192.168.1.132       ansible_user=pi
+
+[print_server]
+gutenberg ansible_host=gutenberg.local
+
+[pi:children]
+pi_wireless
+
+[pi_wireless:children]
+print_server
