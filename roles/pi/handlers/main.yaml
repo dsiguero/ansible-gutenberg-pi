@@ -1,5 +1,4 @@
 ---
-
 - name: restart dhcpcd
   ansible.builtin.service:
     name: dhcpcd
