@@ -50,7 +50,6 @@
 - name: Configure dhcpcd
   ansible.builtin.blockinfile:
     dest: /etc/dhcpcd.conf
-    # yamllint disable-line rule:truthy
     backup: yes
     block: |
       interface {{ ansible_facts.default_ipv4.interface }}
@@ -66,7 +65,6 @@
   ansible.builtin.service:
     name: dhcpcd
     state: started
-    # yamllint disable-line rule:truthy
     enabled: yes
   tags:
     - net
