@@ -19,7 +19,7 @@
 
 - name: Wait for network on boot
   become: true
-  command: 
+  command:
     cmd: raspi-config nonint do_boot_wait 0
     creates: /var/opt/wait-for-network
   tags:
@@ -28,7 +28,7 @@
 - name: Expand filesystem
   become: true
   run_once: true
-  command: 
+  command:
     cmd: raspi-config --expand-rootfs
     creates: /var/opt/fs-expanded
   tags:
@@ -46,7 +46,7 @@
     insertafter: EOF
   notify: restart dhcpcd
   tags:
-    - net  
+    - net
 
 - name: Start the dhcpcd service
   service:
