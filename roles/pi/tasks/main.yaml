@@ -96,7 +96,7 @@
   changed_when: false
   ansible.builtin.command: grep -q "ipv6.disable=1" /boot/cmdline.txt
   register: ipv6_check
-  failed_when: ipv6_check.rc > 1    # Failed when return code is greater than 1
+  failed_when: ipv6_check.rc > 1 # Failed when return code is greater than 1
 
 - name: Disable ipv6
   when: disable_ipv6 and ipv6_check.rc == 1
