@@ -6,19 +6,30 @@ on:
       - master
 
 jobs:
-  lint-and-format:
+  ansible-lint:
     runs-on: ubuntu-latest
+    container:
+      image: pipelinecomponents/ansible-lint@0.39.1
+      volumes:
+        - ${{ github.workspace }}:/code
     steps:
       - uses: actions/checkout@v3
         with:
           # Make sure the actual branch is checked out when running on pull requests
           ref: ${{ github.head_ref }}
+      - name: Lint Ansible roles
+        run: |
+          for lintable in $({find ./roles/* -type d -maxdepth 0; find . -type f -not -path '*/\.git/*' -name '*.yaml' -maxdepth 1;}); do
+            ansible-lint $lintable;
+          done;
+  check-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
           # This is important to fetch the changes to the previous commit
           fetch-depth: 0
-
-      - name: ansible-lint
-        # replace `main` with any valid ref, or tags like `v6`
-        uses: ansible-community/ansible-lint-action@v6
 
       - name: prettier
         uses: creyD/prettier_action@v4.2
