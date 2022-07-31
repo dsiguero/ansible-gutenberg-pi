@@ -1,0 +1,15 @@
+# Ignore everything in roles dir
+/*
+
+# Except:
+# .gitignore itself
+!.gitignore
+
+# the requirements file
+!requirements.yml
+
+# Readme if any
+!README.md
+
+# and any specific role we want to version locally
+!pi/
