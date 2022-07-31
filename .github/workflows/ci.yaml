@@ -9,7 +9,7 @@ jobs:
   ansible-lint:
     runs-on: ubuntu-latest
     container:
-      image: pipelinecomponents/ansible-lint@0.39.1
+      image: pipelinecomponents/ansible-lint:0.39.1
       volumes:
         - ${{ github.workspace }}:/code
     steps:
