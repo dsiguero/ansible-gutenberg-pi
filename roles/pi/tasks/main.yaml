@@ -90,3 +90,10 @@
   tags:
     - io
     - bluetooth
+
+- name: Disable ipv6
+  when: disable_ipv6
+  ansible.builtin.replace:
+    dest: /boot/cmdline.txt
+    regexp: "^(.*)$"
+    replace: '\1 ipv6.disable=1'
