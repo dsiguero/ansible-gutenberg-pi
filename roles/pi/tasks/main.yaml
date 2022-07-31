@@ -17,20 +17,33 @@
   tags:
     - raspi_config
 
-- name: Wait for network on boot
-  become: true
-  ansible.builtin.command:
-    cmd: raspi-config nonint do_boot_wait 0
-    creates: /var/opt/wait-for-network
+- name: Check wait for network on boot
+  ansible.builtin.command: raspi-config nonint get_boot_wait
+  register: wait_for_network
+  changed_when: false # Only reads "state"
+  failed_when: wait_for_network.stderr != ""
   tags:
     - raspi_config
 
-- name: Expand filesystem
-  become: true
-  run_once: true
+- name: Wait for network on boot
   ansible.builtin.command:
-    cmd: raspi-config --expand-rootfs
-    creates: /var/opt/fs-expanded
+    cmd: raspi-config nonint do_boot_wait 0
+  when: wait_for_network.stdout != "0"
+  tags:
+    - raspi_config
+
+- name: Check unpartitioned fs space
+  ansible.builtin.shell: |
+    set -o pipefail
+    /sbin/parted /dev/mmcblk0 unit gb print free \
+      | grep 'Free Space' | tail -n1 | awk '{print $3}'
+  register: unpartitioned_space
+  changed_when: false
+  failed_when: unpartitioned_space.stderr != ""
+
+- name: Expand filesystem
+  ansible.builtin.command: raspi-config --expand-rootfs
+  when: unpartitioned_space.stdout != "0.00GB"
   tags:
     - raspi_config
 
@@ -40,10 +53,10 @@
     # yamllint disable-line rule:truthy
     backup: yes
     block: |
-      interface '{{ ansible_facts.default_ipv4.interface }}'
-      static ip_address='{{ ansible_facts.default_ipv4.address }}'/24
-      static routers='{{ ansible_facts.default_ipv4.gateway }}'
-      static domain_name_servers='{{ dns_servers }}'
+      interface {{ ansible_facts.default_ipv4.interface }}
+      static ip_address={{ ansible_facts.default_ipv4.address }}/24
+      static routers={{ ansible_facts.default_ipv4.gateway }}
+      static domain_name_servers={{ dns_servers }}
     insertafter: EOF
   notify: restart dhcpcd
   tags:

@@ -6,13 +6,32 @@ on:
       - master
 
 jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GH_ACTIONS_PAT }}
+          # This is important to fetch the changes to the previous commit
+          fetch-depth: 0
+
+      - name: prettier
+        uses: creyD/prettier_action@v4.2
+        with:
+          prettier_options: --write **/*.{yaml,yml,json,md}
+          commit_message: "chore(auto): formatting"
+
   ansible-lint:
     runs-on: ubuntu-latest
     container:
       image: pipelinecomponents/ansible-lint:0.39.1
       volumes:
         - ${{ github.workspace }}:/code
+    needs: formatting
     steps:
+      # TODO: add problem matchers
+      # TODO: parametrise this with project name
       - run: git config --global --add safe.directory /__w/ansible-gutenberg-pi/ansible-gutenberg-pi
       - uses: actions/checkout@v3
         with:
@@ -28,17 +47,3 @@ jobs:
           for playbook in $(find . -type f -not -path '*/\.git/*' -name '*.yaml' -maxdepth 1); do
             ansible-lint $playbook;
           done;
-  check-format:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-          # This is important to fetch the changes to the previous commit
-          fetch-depth: 0
-
-      - name: prettier
-        uses: creyD/prettier_action@v4.2
-        with:
-          prettier_options: --check .
-          only_changed: True
