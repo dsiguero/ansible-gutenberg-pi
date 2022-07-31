@@ -1,0 +1,16 @@
+---
+
+- hosts: all
+  tasks:
+  - name: Current IP Address
+    ansible.builtin.debug:
+      var: ansible_facts.default_ipv4.address
+  - name: Current Router IP Address
+    ansible.builtin.debug:
+      var: ansible_facts.default_ipv4.gateway
+  - name: Current interface
+    ansible.builtin.debug:
+      var: ansible_facts.default_ipv4.interface
+  # - name: All facts
+  #   ansible.builtin.debug:
+  #     var: ansible_facts
