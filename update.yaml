@@ -13,7 +13,7 @@
     - name: Upgrade all packages on servers
       register: upgradesys
       ansible.builtin.apt:
-        upgrade: dist
+        upgrade: yes
         force_apt_get: yes
 
     - name: Display the last line of upgrade
