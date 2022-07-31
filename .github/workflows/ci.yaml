@@ -16,7 +16,7 @@ jobs:
       image: pipelinecomponents/ansible-lint:0.39.1
       volumes:
         - ${{ github.workspace }}:/code
-    
+
     steps:
       # TODO: add problem matchers
       # TODO: parametrise this with project name
