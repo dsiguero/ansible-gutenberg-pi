@@ -70,3 +70,23 @@
     enabled: yes
   tags:
     - net
+
+- name: Disable bluetooth in boot config
+  ansible.builtin.lineinfile:
+    dest: /boot/config.txt
+    line: dtoverlay=disable-bt
+    insertbefore: EOF
+  when: not use_bluetooth
+  tags:
+    - io
+    - bluetooth
+
+- name: Disable hciuart service
+  ansible.builtin.service:
+    name: hciuart
+    state: stopped
+    enabled: no
+  when: not use_bluetooth
+  tags:
+    - io
+    - bluetooth
