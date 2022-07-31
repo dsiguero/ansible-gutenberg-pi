@@ -1,0 +1,18 @@
+---
+- name: Update and upgrade packages
+  ansible.builtin.import_playbook: update.yaml
+
+- hosts: pi
+  roles:
+    - role: pi
+      become: true
+
+- hosts: all
+  roles:
+    - role: ssh
+      become: true
+
+- hosts: print_server
+  roles:
+    - role: cups
+      become: true

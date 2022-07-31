@@ -1,0 +1,5 @@
+---
+- name: restart cups
+  ansible.builtin.service:
+    name: cups
+    state: restarted
