@@ -1,0 +1,59 @@
+---
+- name: Disable wireless power management
+  ansible.builtin.lineinfile:
+    dest: /etc/rc.local
+    line: /sbin/iw dev wlan0 set power_save off
+    insertbefore: "^exit"
+  when: ansible_facts.default_ipv4.interface is match("wlan*")
+  tags:
+    - net
+    - wireless
+
+- name: Set GPU memory to minimum
+  ansible.builtin.lineinfile:
+    dest: /boot/config.txt
+    line: gpu_mem=16
+    insertafter: "^[all]"
+  tags:
+    - raspi_config
+
+- name: Wait for network on boot
+  become: true
+  ansible.builtin.command:
+    cmd: raspi-config nonint do_boot_wait 0
+    creates: /var/opt/wait-for-network
+  tags:
+    - raspi_config
+
+- name: Expand filesystem
+  become: true
+  run_once: true
+  ansible.builtin.command:
+    cmd: raspi-config --expand-rootfs
+    creates: /var/opt/fs-expanded
+  tags:
+    - raspi_config
+
+- name: Configure dhcpcd
+  ansible.builtin.blockinfile:
+    dest: /etc/dhcpcd.conf
+    # yamllint disable-line rule:truthy
+    backup: yes
+    block: |
+      interface '{{ ansible_facts.default_ipv4.interface }}'
+      static ip_address='{{ ansible_facts.default_ipv4.address }}'/24
+      static routers='{{ ansible_facts.default_ipv4.gateway }}'
+      static domain_name_servers='{{ dns_servers }}'
+    insertafter: EOF
+  notify: restart dhcpcd
+  tags:
+    - net
+
+- name: Start the dhcpcd service
+  ansible.builtin.service:
+    name: dhcpcd
+    state: started
+    # yamllint disable-line rule:truthy
+    enabled: yes
+  tags:
+    - net
