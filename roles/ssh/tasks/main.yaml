@@ -5,7 +5,6 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: present
-    # yamllint disable-line rule:truthy
     backup: yes
   with_items: "{{ sshd_config_options }}"
   notify: restart sshd
