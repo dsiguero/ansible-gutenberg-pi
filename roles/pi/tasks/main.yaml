@@ -37,6 +37,8 @@
     set -o pipefail
     /sbin/parted /dev/mmcblk0 unit gb print free \
       | grep 'Free Space' | tail -n1 | awk '{print $3}'
+  args:
+    executable: /bin/bash
   register: unpartitioned_space
   changed_when: false
   failed_when: unpartitioned_space.stderr != ""
