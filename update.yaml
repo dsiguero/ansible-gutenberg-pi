@@ -10,11 +10,6 @@
         force_apt_get: yes
         cache_valid_time: 3600 # 1 hour
 
-    - name: Display the last line of update
-      ansible.builtin.debug:
-        msg: "{{ updatesys.stdout_lines | last }}"
-      when: updatesys.stdout_lines is defined
-
     - name: Upgrade all packages on servers
       register: upgradesys
       ansible.builtin.apt:
