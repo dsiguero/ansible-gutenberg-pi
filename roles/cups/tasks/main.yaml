@@ -19,6 +19,6 @@
     append: yes
   notify: restart cups
 
-- name: Allow cups remote access
-  ansible.builtin.command: cupsctl --remote-admin
-  notify: restart cups
+# - name: Allow cups remote access
+#   ansible.builtin.command: cupsctl --remote-admin
+#   notify: restart cups
