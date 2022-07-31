@@ -1,0 +1,26 @@
+---
+- name: Install cups
+  ansible.builtin.package:
+    name:
+      - cups
+      # - hplip
+      # - printer-driver-splix
+
+- name: Ensure cups is running and enabled
+  ansible.builtin.service:
+    name: "cups"
+    state: started
+    enabled: true
+
+- name: Add '{{ ansible_facts.user_id }}' to lpadmin group
+  ansible.builtin.user:
+    name: '{{ ansible_facts.user_id }}'
+    groups: lpadmin
+    append: yes
+  notify: restart cups
+
+- name: Allow cups remote access
+  ansible.builtin.command: cupsctl --remote-admin
+  notify: restart cups
+
+

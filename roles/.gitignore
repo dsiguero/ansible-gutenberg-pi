@@ -14,3 +14,4 @@
 # and any specific role we want to version locally
 !pi/
 !ssh/
+!cups/
