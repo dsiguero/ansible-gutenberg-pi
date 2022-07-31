@@ -1,5 +1,4 @@
 ---
-
 - name: Update and upgrade packages
   ansible.builtin.import_playbook: update.yaml
 
