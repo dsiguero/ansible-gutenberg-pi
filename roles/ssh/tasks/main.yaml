@@ -1,0 +1,14 @@
+---
+
+- name: Configure sshd options in /etc/ssh/sshd_config
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    backup: yes
+  with_items:  "{{ sshd_config_options }}"
+  notify: restart sshd
+  tags:
+    - net
+    - security
