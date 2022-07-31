@@ -13,6 +13,7 @@ jobs:
       volumes:
         - ${{ github.workspace }}:/code
     steps:
+      - run: git config --global --add safe.directory /__w/ansible-gutenberg-pi/ansible-gutenberg-pi
       - uses: actions/checkout@v3
         with:
           # Make sure the actual branch is checked out when running on pull requests
