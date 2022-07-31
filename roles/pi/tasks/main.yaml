@@ -20,7 +20,7 @@
 - name: Check wait for network on boot
   ansible.builtin.command: raspi-config nonint get_boot_wait
   register: wait_for_network
-  changed_when: false       # Only reads "state"
+  changed_when: false # Only reads "state"
   failed_when: wait_for_network.stderr != ""
   tags:
     - raspi_config
