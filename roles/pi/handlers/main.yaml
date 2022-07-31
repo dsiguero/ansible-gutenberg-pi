@@ -3,6 +3,6 @@
 # See http://docs.ansible.com/playbooks_intro.html for more information about handlers.
 
 - name: restart dhcpcd
-  service:
+  ansible.builtin.service:
     name: dhcpcd
     state: restarted
