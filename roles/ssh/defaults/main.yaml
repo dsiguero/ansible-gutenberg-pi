@@ -1,0 +1,10 @@
+---
+sshd_config_options:
+  - regexp: "^#?PermitEmptyPasswords"
+    line: "PermitEmptyPasswords no"
+
+  - regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"
+
+  - regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin no"
