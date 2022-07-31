@@ -49,7 +49,5 @@ jobs:
       - name: Lint Ansible playbooks
         run: |
           for playbook in $(find . -type f -not -path '*/\.git/*' -name '*.yaml' -maxdepth 1); do
-            if [[ ! "${file}" =~ "yamllint" ]]; then
-              ansible-lint $playbook;
-            fi
+            ansible-lint $playbook;
           done;
