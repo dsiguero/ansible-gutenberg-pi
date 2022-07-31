@@ -1,0 +1,38 @@
+---
+- hosts: all
+  become: true
+  become_user: root
+  tasks:
+    - name: Update apt repo and cache on all boxes
+      register: updatesys
+      ansible.builtin.apt:
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 3600 # 1 hour
+
+    - name: Upgrade all packages on servers
+      register: upgradesys
+      ansible.builtin.apt:
+        upgrade: dist
+        force_apt_get: yes
+
+    - name: Display the last line of upgrade
+      ansible.builtin.debug:
+        msg: "{{ upgradesys.stdout_lines | last }}"
+      when: upgradesys.stdout_lines is defined
+
+    - name: Check if a reboot is needed
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+        get_md5: no
+      register: reboot_required_file
+
+    - name: Reboot if required
+      ansible.builtin.reboot:
+        msg: "Reboot initiated by Ansible"
+        connect_timeout: 5
+        reboot_timeout: 300
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime
+      when: reboot_required_file.stat.exists
