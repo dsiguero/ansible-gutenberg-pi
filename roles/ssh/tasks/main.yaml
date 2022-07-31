@@ -3,8 +3,8 @@
   ansible.posix.authorized_key:
     user: "{{ ansible_facts.user_id }}"
     key: >-
-      "{{ lookup('file',
-          lookup('env','HOME') + '/.ssh/' + authorized_key_file + '.pub') }}"
+      {{ lookup('file',
+          lookup('env','HOME') + '/.ssh/' + authorized_key_file + '.pub') }}
 
 - name: Configure sshd options in /etc/ssh/sshd_config
   ansible.builtin.lineinfile:
