@@ -19,8 +19,13 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Lint Ansible roles
         run: |
-          for lintable in $({find ./roles/* -type d -maxdepth 0; find . -type f -not -path '*/\.git/*' -name '*.yaml' -maxdepth 1;}); do
-            ansible-lint $lintable;
+          for roles in $(find ./roles/* -type d -maxdepth 0); do
+            ansible-lint $roles;
+          done;
+      - name: Lint Ansible playbooks
+        run: |
+          for playbook in $(find . -type f -not -path '*/\.git/*' -name '*.yaml' -maxdepth 1); do
+            ansible-lint $playbook;
           done;
   check-format:
     runs-on: ubuntu-latest
