@@ -1,3 +1,4 @@
+---
 - name: Install samba packages
   ansible.builtin.package:
     name:
