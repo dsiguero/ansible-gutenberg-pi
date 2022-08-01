@@ -1,0 +1,32 @@
+---
+## https://www.linux-magazine.com/Online/Features/AirPrint#:~:text=Friedrich%20Hotz-,If%20your%20home%20network%20includes%20a%20Linux%20machine%2C%20you%20have,the%20technology%20known%20as%20AirPrint.
+
+- hosts: print_server
+  tasks:
+    - name: Install python-cups
+      become: yes
+      ansible.builtin.package:
+        name:
+          - python3-cups
+
+    - name: Download tjfontaine airprint-generate
+      ansible.builtin.shell: |
+        wget https://github.com/tjfontaine/airprint-generate/archive/refs/heads/master.zip
+        unzip master.zip
+
+    - name: Generate airprint files for printers
+      ansible.builtin.shell: |
+        cd airprint-generate-master
+        ./airprint-generate.py
+        sudo mv Airprint-* /etc/avahi/services
+
+    # TODO: Convert to role
+    # TODO: Use handler here
+    - name: Restart the dhcpcd service
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: restarted
+        enabled: yes
+      with_items:
+        - avahi-daemon
+        - cups
