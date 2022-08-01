@@ -5,12 +5,14 @@
       - samba
       - samba-common-bin
 
+# TODO: Merge these 2
 - name: Config printer sharing
   ini_file:
     path: /etc/samba/smb.conf
     section: printers
     option: "{{ item.option }}"
     value: "{{ item.value }}"
+    mode: "0640"
   with_items: "{{ samba_printer_sharing.config.printers }}"
 
 - name: Config printer driver sharing
@@ -19,6 +21,7 @@
     section: "print$"
     option: "{{ item.option }}"
     value: "{{ item.value }}"
+    mode: "0640"
   with_items: "{{ samba_printer_sharing.config['print$'] }}"
 
 - name: Ensure samba is running and enabled
