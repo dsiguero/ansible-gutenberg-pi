@@ -16,3 +16,11 @@
     groups: lpadmin
     append: yes
   notify: restart cups
+
+- name: Setup cups config
+  ansible.builtin.template:
+    src: cupsd.conf.j2
+    dest: /etc/cups/cupsd.conf
+    mode: "0640"
+    validate: cupsd -t -c %s
+  notify: restart cups
