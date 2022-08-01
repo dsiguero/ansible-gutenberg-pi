@@ -1,2 +1,3 @@
 ---
 use_bluetooth: false
+cups_listen: "*:631"

@@ -1,0 +1,28 @@
+---
+# Allow remote access
+cups_listen: "localhost:631"
+
+# Share local printers on the local network.
+cups_browsing: "Off"
+
+# Cups can offer a web-interface. Choose from "No" or "Yes".
+cups_web_interface: "Yes"
+
+cups_locations:
+  - name: /
+    order: allow,deny
+    allow: "@local"
+  - name: /admin
+    order: allow,deny
+    allow: "@local"
+  - name: /admin/conf
+    authtype: Default
+    require: user @SYSTEM
+    order: allow,deny
+    allow: "@local"
+  - name: /admin/log
+    authtype: Default
+    require: user @SYSTEM
+    order: allow,deny
+
+extra_printer_driver_packages: []

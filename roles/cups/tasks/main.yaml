@@ -1,10 +1,22 @@
 ---
 - name: Install cups
   ansible.builtin.package:
-    name:
+    name: 
       - cups
-      # - hplip
-      # - printer-driver-splix
+
+- name: Install extra printer driver packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ extra_printer_driver_packages }}"
+      
+- name: Setup cups config
+  ansible.builtin.template:
+    src: cupsd.conf.j2
+    dest: /etc/cups/cupsd.conf
+    mode: "0640"
+    validate: cupsd -t -c %s
+  notify: restart cups
 
 - name: Ensure cups is running and enabled
   ansible.builtin.service:
