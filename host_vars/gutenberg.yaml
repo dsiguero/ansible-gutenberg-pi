@@ -3,3 +3,4 @@ authorized_key_file: gutenberg_ed25519
 extra_printer_driver_packages:
   - hplip
   - printer-driver-splix
+print_testpage: false

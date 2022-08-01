@@ -1,0 +1,46 @@
+---
+# TODO: Extract and parametrise
+- hosts: print_server
+  tasks:
+    - name: Check if Samsung ML-1660 is already configured
+      ansible.builtin.shell: |
+        set -o pipefail
+        /usr/bin/lpstat -p | grep -q 'ML-1660'
+      args:
+        executable: /bin/bash
+      changed_when: false
+      register: samsung_ml1660_configured
+      failed_when: samsung_ml1660_configured.rc > 1 # Failed when return code is greater than 1
+
+    - name: Setup Samsung ML-1660 series
+      ansible.builtin.shell: |
+        set -o pipefail
+
+        device_uri=$(/usr/sbin/lpinfo -v | grep -i "samsung" | awk '{ print $2 }')
+        model=$(/usr/sbin/lpinfo -m | grep "Samsung ML-1660" | awk '{ print $1 }')
+
+        /usr/sbin/lpadmin -p Samsung_ML-1660_Series -E \
+          -D "Samsung ML-1660 Series" \
+          -v "${device_uri}" \
+          -m "${model}" \
+          -o printer-is-shared=true
+      args:
+        executable: /bin/bash
+      when: samsung_ml1660_configured.rc == 1
+
+    - name: Retrieve full printer name
+      ansible.builtin.shell: |
+        set -o pipefail
+        lpstat -p | grep ML-1660 | awk '{ print $2 }'
+      args:
+        executable: /bin/bash
+      register: ml1660_printer_name
+      changed_when: false
+
+    - name: Print testpage
+      ansible.builtin.shell: |
+        set -o pipefail
+        lp -d {{ ml1660_printer_name.stdout }} /usr/share/cups/data/default-testpage.pdf
+      args:
+        executable: /bin/bash
+      when: samsung_ml1660_configured.rc == 1 and print_testpage

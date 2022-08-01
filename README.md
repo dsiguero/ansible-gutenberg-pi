@@ -8,6 +8,9 @@ This is an Ansible project that aims to allow me to configure my Raspberry Pi ba
 
 - `update.yaml`: keeps packages up-to-date
 - `debug_facts.yaml`: to display Ansible facts easily
+- `m1132mfp.yaml`: installs `hplip` drivers and configures a HP LaserJet M1132MFP printer
+- `ml1660.yaml`: installs Samsung `splix` drivers and configures a Samsung ML-1660 Series printer
+
 
 ## How to run
 
@@ -15,7 +18,7 @@ This is an Ansible project that aims to allow me to configure my Raspberry Pi ba
 ansible-playbook main|update|debug_facts.yaml [--ask-pass] [--check]
 ```
 
-> :warning: **Note**: Unless you set up a key (`authorized_keys`) beforehand, Ansible will require `--ask-pass` flag in order to establish a SSH connection.
+> :warning: **Note**: Unless you set up a key (`authorized_keys`) beforehand, Ansible will require `--ask-pass` flag in order to establish a SSH connection the first time it runs.
 
 ## TODO:
 
@@ -24,10 +27,11 @@ ansible-playbook main|update|debug_facts.yaml [--ask-pass] [--check]
 - [x] Raspberry Pi specific configurations
 - [x] Configure current static IP in dhcpcd
 - [x] cups
-  - [x] windows (samba) discovery
-    - [ ] samba hardening
-    - [ ] expose share to network
-  - [ ] macos/ios discovery
+  - [x] windows: avahi/bonjour. No SMB required
+  - [x] macos: avahi/bonjour. No SMB required
+  - [x] android: avahi/bonjour. No SMB required
+  - [ ] ios: might need airprint
 - [ ] printer-specific roles/plays
 - [ ] sane?
 - [ ] drop files to network folder to print?
+- [ ] document/scan manager
