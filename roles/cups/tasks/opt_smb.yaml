@@ -1,6 +1,6 @@
 - name: Install samba packages
   ansible.builtin.package:
-    name: 
+    name:
       - samba
       - samba-common-bin
 
@@ -15,7 +15,7 @@
 - name: Config printer driver sharing
   ini_file:
     path: /etc/samba/smb.conf
-    section: 'print$'
+    section: "print$"
     option: "{{ item.option }}"
     value: "{{ item.value }}"
   with_items: "{{ samba_printer_sharing.config['print$'] }}"
@@ -26,4 +26,3 @@
     state: started
     enabled: true
   notify: restart samba
-

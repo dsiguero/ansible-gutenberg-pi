@@ -32,18 +32,17 @@ samba_printer_sharing:
   config:
     printers:
       - option: browseable
-        value: 'no'
+        value: "no"
       - option: printable
-        value: 'yes'
+        value: "yes"
       - option: guest ok
-        value: 'yes'
+        value: "yes"
       - option: read only
-        value: 'yes'
-    'print$': 
+        value: "yes"
+    "print$":
       - option: browseable
-        value: 'yes'
+        value: "yes"
       - option: guest ok
-        value: 'no'
+        value: "no"
       - option: read only
-        value: 'no'
- 
+        value: "no"
