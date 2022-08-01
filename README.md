@@ -11,7 +11,6 @@ This is an Ansible project that aims to allow me to configure my Raspberry Pi ba
 - `m1132mfp.yaml`: installs `hplip` drivers and configures a HP LaserJet M1132MFP printer
 - `ml1660.yaml`: installs Samsung `splix` drivers and configures a Samsung ML-1660 Series printer
 
-
 ## How to run
 
 ```

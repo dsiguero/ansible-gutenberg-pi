@@ -11,7 +11,7 @@
       changed_when: false
       register: samsung_ml1660_configured
       # Failed when return code is greater than 1
-      failed_when: samsung_ml1660_configured.rc > 1 
+      failed_when: samsung_ml1660_configured.rc > 1
 
     - name: Setup Samsung ML-1660 series
       ansible.builtin.shell: |
