@@ -1,2 +1,24 @@
 ---
 use_bluetooth: false
+cups_listen: "*:631"
+cups_browsing: "On"
+
+samba_printer_sharing:
+  enable: true
+  config:
+    printers:
+      - option: browseable
+        value: "no"
+      - option: printable
+        value: "yes"
+      - option: guest ok
+        value: "yes"
+      - option: read only
+        value: "yes"
+    "print$":
+      - option: browseable
+        value: "yes"
+      - option: guest ok
+        value: "no"
+      - option: read only
+        value: "no"

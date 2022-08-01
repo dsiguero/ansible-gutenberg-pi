@@ -23,6 +23,11 @@ ansible-playbook main|update|debug_facts.yaml [--ask-pass] [--check]
 - [x] Package update/upgrade
 - [x] Raspberry Pi specific configurations
 - [x] Configure current static IP in dhcpcd
-- [ ] cups
-- [ ] printer-specific role
+- [x] cups
+  - [x] windows (samba) discovery
+    - [ ] samba hardening
+    - [ ] expose share to network
+  - [ ] macos/ios discovery
+- [ ] printer-specific roles/plays
 - [ ] sane?
+- [ ] drop files to network folder to print?

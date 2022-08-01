@@ -1,10 +1,8 @@
 ---
-- name: Install cups
+- name: Install cups and extras
   ansible.builtin.package:
-    name:
-      - cups
-      # - hplip
-      # - printer-driver-splix
+    name: "{{ item }}"
+  with_items: "{{ ['cups'] + extra_printer_driver_packages }}"
 
 - name: Ensure cups is running and enabled
   ansible.builtin.service:
@@ -18,3 +16,17 @@
     groups: lpadmin
     append: yes
   notify: restart cups
+
+- name: Setup cups config
+  ansible.builtin.template:
+    src: cupsd.conf.j2
+    dest: /etc/cups/cupsd.conf
+    mode: "0640"
+    validate: cupsd -t -c %s
+  notify: restart cups
+
+- name: (Optional) samba tasks
+  import_tasks: opt_smb.yaml
+  when: samba_printer_sharing.enable
+  tags:
+    - cups-samba
