@@ -24,3 +24,9 @@
     mode: "0640"
     validate: cupsd -t -c %s
   notify: restart cups
+
+- name: (Optional) samba tasks
+  import_tasks: opt_smb.yaml
+  when: samba_printer_sharing.enable
+  tags:
+    - cups-samba

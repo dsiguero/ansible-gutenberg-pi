@@ -26,3 +26,24 @@ cups_locations:
     order: allow,deny
 
 extra_printer_driver_packages: []
+
+samba_printer_sharing:
+  enable: false
+  config:
+    printers:
+      - option: browseable
+        value: 'no'
+      - option: printable
+        value: 'yes'
+      - option: guest ok
+        value: 'yes'
+      - option: read only
+        value: 'yes'
+    'print$': 
+      - option: browseable
+        value: 'yes'
+      - option: guest ok
+        value: 'no'
+      - option: read only
+        value: 'no'
+ 

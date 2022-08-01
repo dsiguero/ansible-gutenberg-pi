@@ -3,3 +3,11 @@
   ansible.builtin.service:
     name: cups
     state: restarted
+
+- name: restart samba
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - smbd
+    - nmbd
