@@ -1,0 +1,66 @@
+---
+# TODO: Extract and parametrise
+- hosts: print_server
+  tasks:
+    - name: Install expect
+      become: yes
+      ansible.builtin.package:
+        name:
+          - expect
+
+    - name: Get HP printer details from lsusb
+      ansible.builtin.shell: |
+        set -o pipefail
+        lsusb -d 03f0: | sed -r 's/Bus ([0-9]*) Device ([0-9]*).*/\1:\2/g'
+      args:
+        executable: /bin/bash
+      register: hp_lsusb
+      changed_when: false
+
+    - name: Check if HP M1132_MFP is already configured
+      ansible.builtin.shell: |
+        set -o pipefail
+        lpstat -p | grep -q 'M1132_MFP'
+      args:
+        executable: /bin/bash
+      changed_when: false
+      register: hp_m1132_mfp_configured
+      failed_when: hp_m1132_mfp_configured.rc > 1 # Failed when return code is greater than 1
+
+    - name: Setup HP M1132_MFP
+      ansible.builtin.shell: |
+        set timeout -1
+        spawn sudo hp-setup -i -a {{ hp_lsusb.stdout }}
+
+        expect "Enter option (d=download*, p=specify path, q=quit)"
+        send -- "d\n"
+
+        expect "Do you accept the license terms for the plug-in (y=yes*, n=no, q=quit)"
+        send -- "y\n"
+
+        expect eof
+      args:
+        executable: /usr/bin/expect
+      register: hp_setup
+      when: hp_m1132_mfp_configured.rc == 1
+
+    - name: Display hp-setup output
+      ansible.builtin.debug:
+        var: hp_setup.stdout_lines
+
+    - name: Retrieve full printer name
+      ansible.builtin.shell: |
+        set -o pipefail
+        lpstat -p | grep M1132 | awk '{ print $2 }'
+      args:
+        executable: /bin/bash
+      register: m1132_printer_name
+      changed_when: false
+
+    - name: Print testpage
+      ansible.builtin.shell: |
+        set -o pipefail
+        lp -d {{ m1132_printer_name.stdout }} /usr/share/cups/data/default-testpage.pdf
+      args:
+        executable: /bin/bash
+      when: hp_m1132_mfp_configured.rc == 1 and print_testpage

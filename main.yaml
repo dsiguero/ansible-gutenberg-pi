@@ -10,3 +10,9 @@
       become: true
     - role: cups
       become: true
+
+- name: Install HP M1132MFP
+  ansible.builtin.import_playbook: m1132mfp.yaml
+
+- name: Install Samsung ML-1660
+  ansible.builtin.import_playbook: ml1660.yaml

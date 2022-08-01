@@ -10,8 +10,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GH_ACTIONS_PAT }}
+          # This is important to fetch the changes to the previous commit
+          fetch-depth: 0
+
+      - name: prettier
+        uses: creyD/prettier_action@v4.2
+        with:
+          prettier_options: --write **/*.{yaml,yml,json,md}
+          commit_message: "chore(auto): formatting"
+
   ansible-lint:
     runs-on: ubuntu-latest
+    needs: formatting
     container:
       image: pipelinecomponents/ansible-lint:0.39.1
       volumes:
@@ -35,19 +52,3 @@ jobs:
           for playbook in $(find . -type f -not -path '*/\.git/*' -name '*.yaml' -maxdepth 1); do
             ansible-lint $playbook;
           done;
-  formatting:
-    runs-on: ubuntu-latest
-    needs: ansible-lint
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-          token: ${{ secrets.GH_ACTIONS_PAT }}
-          # This is important to fetch the changes to the previous commit
-          fetch-depth: 0
-
-      - name: prettier
-        uses: creyD/prettier_action@v4.2
-        with:
-          prettier_options: --write **/*.{yaml,yml,json,md}
-          commit_message: "chore(auto): formatting"
