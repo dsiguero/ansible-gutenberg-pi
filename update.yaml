@@ -3,14 +3,14 @@
   become: true
   become_user: root
   tasks:
-    - name: Update apt repo and cache on all boxes
+    - name: Update apt repo and cache
       register: updatesys
       ansible.builtin.apt:
         update_cache: yes
         force_apt_get: yes
         cache_valid_time: 3600 # 1 hour
 
-    - name: Upgrade all packages on servers
+    - name: Upgrade all packages
       register: upgradesys
       ansible.builtin.apt:
         upgrade: yes
