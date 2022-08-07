@@ -54,10 +54,12 @@
     - name: Check if there is an existing NetworkManager connection
       changed_when: false
       ansible.builtin.shell: |
-        nmcli con show wifi-{{ wireless_ssid }}
+        set -o pipefail
+        nmcli con show | grep -q wifi-{{ wireless_ssid }}
+      args:
+        executable: /bin/bash
       register: nm_connection_setup
-      tags:
-        - nm
+      failed_when: nm_connection_setup.rc > 1
 
     - name: Add NetworkManager connection
       become: true
@@ -75,8 +77,6 @@
           ipv4.dns "{{ networking.ipv4.dns | join(' ') }}" \
           ipv6.method ignore
       notify: Reboot and wait
-      tags:
-        - nm
 
     - name: Remove dhcp related tools
       become: true
