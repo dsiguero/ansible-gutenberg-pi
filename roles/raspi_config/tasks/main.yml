@@ -1,5 +1,5 @@
 ---
-# tasks file for dsiguero.raspi-config
+# tasks file for raspi_config
 
 - name: Check wait for network on boot status
   ansible.builtin.command: raspi-config nonint get_boot_wait

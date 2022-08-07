@@ -1,5 +1,5 @@
 ---
-# defaults file for dsiguero.raspi-config
+# defaults file for raspi_config
 
 wait_for_network_on_boot: true
 expand_filesystem: true

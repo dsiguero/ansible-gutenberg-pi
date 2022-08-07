@@ -1,5 +1,5 @@
 ---
-# handlers file for dsiguero.raspi-config
+# handlers file for raspi_config
 
 - name: Reboot and wait
   ansible.builtin.reboot:

@@ -4,7 +4,7 @@
 
 - hosts: print_server
   roles:
-    - role: raspi-config
+    - role: raspi_config
       become: true
       vars:
         ipv6: false
