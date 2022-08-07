@@ -1,5 +1,4 @@
 ---
-
 - name: Network tasks
   tags: net
   block:

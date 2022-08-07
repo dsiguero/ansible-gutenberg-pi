@@ -6,7 +6,7 @@
   register: wait_for_network
   changed_when: false
   failed_when: wait_for_network.stderr != ""
-  
+
 - name: Wait for network on boot
   ansible.builtin.command:
     cmd: raspi-config nonint do_boot_wait 0
@@ -28,8 +28,8 @@
   ansible.builtin.command: raspi-config --expand-rootfs
   when: unpartitioned_space.stdout != "0.00GB" and expand_filesystem
   notify: Reboot and wait
-  
-- name: Set GPU memory 
+
+- name: Set GPU memory
   ansible.builtin.lineinfile:
     dest: /boot/config.txt
     line: gpu_mem={{ gpu_mem }}
@@ -64,4 +64,3 @@
     state: stopped
     enabled: no
   when: not bluetooth
-
