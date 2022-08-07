@@ -45,7 +45,7 @@
       ansible.builtin.shell: sed -rn 's/\sssid="(.*)"$/\1/p' /etc/wpa_supplicant/wpa_supplicant.conf
       changed_when: false
       register: current_wifi_ssid
-      
+
     - name: Get current PSK from wpa_supplicant
       become: true
       ansible.builtin.shell: sed -rn 's/\spsk=(.*)$/\1/p' /etc/wpa_supplicant/wpa_supplicant.conf
@@ -57,7 +57,7 @@
       ansible.builtin.shell: |
         nmcli con show wifi-{{ current_wifi_ssid.stdout }}
       register: nm_connection_setup
-    
+
     - name: Add NetworkManager connection
       become: true
       when: networking.ipv4.static and nm_connection_setup.rc != "0"
