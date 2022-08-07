@@ -46,20 +46,22 @@
       ansible.builtin.shell: sed -rn 's/\sssid="(.*)"$/\1/p' /etc/wpa_supplicant/wpa_supplicant.conf
       changed_when: false
       register: current_wifi_ssid
-      tags:
-        - nm
-
+      
     - name: Get current PSK from wpa_supplicant
       become: true
       ansible.builtin.shell: sed -rn 's/\spsk=(.*)$/\1/p' /etc/wpa_supplicant/wpa_supplicant.conf
       changed_when: false
       register: current_wifi_psk
-      tags:
-        - nm
 
-    - name: Add nm connection
+    - name: Check if there is an existing NetworkManager connection
+      changed_when: false
+      ansible.builtin.shell: |
+        nmcli con show wifi-{{ current_wifi_ssid.stdout }}
+      register: nm_connection_setup
+    
+    - name: Add NetworkManager connection
       become: true
-      when: networking.ipv4.static
+      when: networking.ipv4.static and nm_connection_setup.rc != "0"
       ansible.builtin.command: |
         nmcli con add type wifi \
           con-name wifi-{{ current_wifi_ssid.stdout }} \
@@ -73,29 +75,6 @@
           ipv4.dns "{{ networking.ipv4.dns | join(' ') }}" \
           ipv6.method ignore
       notify: Reboot and wait
-      tags:
-        - nm
-
-    # - name: Add nmcli connection
-    #   become: true
-    #   when: networking.ipv4.static
-    #   community.general.nmcli:
-    #     type: wifi      # TODO: use current connection type from ansible_facts
-    #     conn_name: "wifi-{{ current_wifi_ssid.stdout }}"
-    #     ssid: "{{ current_wifi_ssid.stdout }}"
-    #     ifname: wlan*
-    #     autoconnect: false
-    #     wifi_sec:
-    #       auth-alg: open
-    #       key-mgmt: wpa-psk
-    #       psk: "{{ current_wifi_psk.stdout }}"
-    #     ip4: "{{ networking.ipv4.address }}"
-    #     gw4: "{{ networking.ipv4.gateway }}"
-    #     dns4: "{{ networking.ipv4.dns }}"
-    #     state: present
-    #   notify: Reboot and wait
-    #   tags:
-    #     - nm
 
     - name: Remove dhcp related tools
       become: true
