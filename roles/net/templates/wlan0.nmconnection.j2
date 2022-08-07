@@ -1,0 +1,31 @@
+
+[connection]
+id=wifi
+uuid=14b807c5-0763-4705-b6ed-3e4a1080cabf
+type=wifi
+permissions=
+timestamp=1659870631
+
+[wifi]
+mac-address-blacklist=
+mode=infrastructure
+seen-bssids=62:CA:12:CF:10:9E;
+ssid={{ current_wifi_ssid.stdout }}
+
+[wifi-security]
+auth-alg=open
+key-mgmt=wpa-psk
+psk={{ current_wifi_psk.stdout }}
+
+[ipv4]
+address1=192.168.1.60/24,192.168.1.1
+dns=192.168.1.53;
+dns-search=
+method=manual
+
+[ipv6]
+addr-gen-mode=stable-privacy
+dns-search=
+method=ignore
+
+[proxy]

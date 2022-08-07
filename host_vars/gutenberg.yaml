@@ -1,5 +1,20 @@
 ---
 authorized_key_file: gutenberg_ed25519
+wait_for_network_on_boot: true
+expand_filesystem: true
+gpu_mem: 16
+
+bluetooth: false
+networking:
+  ipv4:
+    static: true
+    dns:
+      - 192.168.1.53
+    address: 192.168.1.60
+    gateway: 192.168.1.1
+
+cups_listen: "*:631"
+cups_browsing: "On"
 extra_printer_driver_packages:
   - hplip
   - printer-driver-splix

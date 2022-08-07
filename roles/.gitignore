@@ -14,4 +14,6 @@
 # and any specific role we want to version locally
 !pi/
 !ssh/
+!net/
+!raspi_config/
 !cups/

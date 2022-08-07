@@ -24,13 +24,13 @@ ansible-playbook main|update|debug_facts.yaml [--ask-pass] [--check]
 - [x] SSH security concerns
 - [x] Package update/upgrade
 - [x] Raspberry Pi specific configurations
-- [x] Configure current static IP in dhcpcd
+- [x] Configure ~~current~~ static IP in ~~dhcpcd~~ Network manager
 - [x] cups
   - [x] windows: avahi/bonjour. No SMB required
   - [x] macos: avahi/bonjour. No SMB required
   - [x] android: avahi/bonjour. No SMB required
   - [ ] ios: might need airprint
-- [ ] printer-specific roles/plays
+- [x] printer-specific roles/plays
 - [ ] sane?
 - [ ] drop files to network folder to print?
 - [ ] document/scan manager

@@ -1,4 +1,2 @@
-gutenberg     ansible_host=192.168.1.135       ansible_user=pi
-
 [print_server]
-gutenberg
+gutenberg     ansible_host=gutenberg.local       ansible_user=pi

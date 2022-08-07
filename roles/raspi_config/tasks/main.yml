@@ -1,0 +1,66 @@
+---
+# tasks file for raspi_config
+
+- name: Check wait for network on boot status
+  ansible.builtin.command: raspi-config nonint get_boot_wait
+  register: wait_for_network
+  changed_when: false
+  failed_when: wait_for_network.stderr != ""
+
+- name: Wait for network on boot
+  ansible.builtin.command:
+    cmd: raspi-config nonint do_boot_wait 0
+  when: wait_for_network.stdout != "0" and wait_for_network_on_boot
+  notify: Reboot and wait
+
+- name: Check unpartitioned fs space
+  ansible.builtin.shell: |
+    set -o pipefail
+    /sbin/parted /dev/mmcblk0 unit gb print free \
+      | grep 'Free Space' | tail -n1 | awk '{print $3}'
+  args:
+    executable: /bin/bash
+  register: unpartitioned_space
+  changed_when: false
+  failed_when: unpartitioned_space.stderr != ""
+
+- name: Expand filesystem
+  ansible.builtin.command: raspi-config --expand-rootfs
+  when: unpartitioned_space.stdout != "0.00GB" and expand_filesystem
+  notify: Reboot and wait
+
+- name: Set GPU memory
+  ansible.builtin.lineinfile:
+    dest: /boot/config.txt
+    line: gpu_mem={{ gpu_mem }}
+    insertafter: "^[all]"
+  notify: Reboot and wait
+
+- name: Check ipv6 status
+  changed_when: false
+  ansible.builtin.command: grep -q "ipv6.disable=1" /boot/cmdline.txt
+  register: ipv6_check
+  failed_when: ipv6_check.rc > 1 # Failed when return code is greater than 1
+
+- name: Disable ipv6
+  when: not ipv6 and ipv6_check.rc == 1
+  ansible.builtin.replace:
+    dest: /boot/cmdline.txt
+    regexp: "^(.*)$"
+    replace: '\1 ipv6.disable=1'
+  notify: Reboot and wait
+
+- name: Disable bluetooth in boot config
+  ansible.builtin.lineinfile:
+    dest: /boot/config.txt
+    line: dtoverlay=disable-bt
+    insertbefore: EOF
+  when: not bluetooth
+  notify: Reboot and wait
+
+- name: Disable hciuart service
+  ansible.builtin.service:
+    name: hciuart
+    state: stopped
+    enabled: no
+  when: not bluetooth

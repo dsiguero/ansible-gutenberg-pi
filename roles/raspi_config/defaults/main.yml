@@ -1,0 +1,8 @@
+---
+# defaults file for raspi_config
+
+wait_for_network_on_boot: true
+expand_filesystem: true
+gpu_mem: 16
+ipv6: false
+bluetooth: false
