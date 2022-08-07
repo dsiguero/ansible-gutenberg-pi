@@ -2,7 +2,7 @@
 # handlers file for dsiguero.raspi-config
 
 - name: Reboot and wait
-  reboot:
+  ansible.builtin.reboot:
     msg: "Reboot initiated by Ansible"
     connect_timeout: 5
     reboot_timeout: 300
