@@ -40,22 +40,21 @@
         enabled: yes
       when: not networking.ipv4.static
 
-    - name: Get current SSID from wpa_supplicant
+    - name: Read wpa_supplicant.conf
       become: true
-      ansible.builtin.shell: sed -rn 's/\sssid="(.*)"$/\1/p' /etc/wpa_supplicant/wpa_supplicant.conf
+      ansible.builtin.command: cat /etc/wpa_supplicant/wpa_supplicant.conf
       changed_when: false
-      register: current_wifi_ssid
+      register: wpa_supplicant
 
-    - name: Get current PSK from wpa_supplicant
-      become: true
-      ansible.builtin.shell: sed -rn 's/\spsk=(.*)$/\1/p' /etc/wpa_supplicant/wpa_supplicant.conf
-      changed_when: false
-      register: current_wifi_psk
+    - name: Set wpa_supplicant.conf wireless credentials as facts
+      ansible.builtin.set_fact:
+        wireless_ssid: "{{ wpa_supplicant.stdout | regex_search('ssid=\"(.*)\"', '\\1') | first }}"
+        wireless_psk: "{{ wpa_supplicant.stdout | regex_search('psk=(.*)', '\\1') | first }}"
 
     - name: Check if there is an existing NetworkManager connection
       changed_when: false
       ansible.builtin.shell: |
-        nmcli con show wifi-{{ current_wifi_ssid.stdout }}
+        nmcli con show wifi-{{ wireless_ssid }}
       register: nm_connection_setup
       tags:
         - nm
@@ -65,11 +64,11 @@
       when: networking.ipv4.static and nm_connection_setup.rc != 0
       ansible.builtin.command: |
         nmcli con add type wifi \
-          con-name wifi-{{ current_wifi_ssid.stdout }} \
-          ssid {{ current_wifi_ssid.stdout }} \
+          con-name wifi-{{ wireless_ssid }} \
+          ssid {{ wireless_ssid }} \
           ifname {{ ansible_facts.default_ipv4.interface }} \
           802-11-wireless-security.key-mgmt WPA-PSK \
-          802-11-wireless-security.psk {{ current_wifi_psk.stdout }} \
+          802-11-wireless-security.psk {{ wireless_psk }} \
           ipv4.method manual \
           ipv4.gateway {{ networking.ipv4.gateway }} \
           ipv4.addresses {{ networking.ipv4.address }}/24 \
