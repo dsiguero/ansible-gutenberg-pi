@@ -5,4 +5,7 @@ use_default_rules: true
 skip_list:
     - yaml[truthy]
     - yaml[comments-indentation]
+    
+warn_list:
+    - command-instead-of-module
     - yaml[line-length]
