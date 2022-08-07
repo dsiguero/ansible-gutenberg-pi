@@ -19,4 +19,3 @@ extra_printer_driver_packages:
   - hplip
   - printer-driver-splix
 print_testpage: false
-
