@@ -1,0 +1,109 @@
+---
+
+- name: Network tasks
+  tags: net
+  block:
+    - name: Get current connection type (wifi or eth)
+      ansible.builtin.set_fact:
+        connection_type: "{{ 'wifi' if ansible_facts.default_ipv4.interface is match('wlan*') else 'eth' }}"
+
+    - name: Install network-manager
+      become: true
+      ansible.builtin.package:
+        state: present
+        name: network-manager
+      when: networking.ipv4.static
+
+    - name: Disable wireless power management
+      ansible.builtin.lineinfile:
+        dest: /etc/rc.local
+        line: /sbin/iw dev wlan0 set power_save off
+        insertbefore: "^exit"
+      when: connection_type == "wifi"
+
+    - name: Configure dhcpcd
+      ansible.builtin.blockinfile:
+        dest: /etc/dhcpcd.conf
+        backup: yes
+        block: |
+          interface {{ ansible_facts.default_ipv4.interface }}
+          static ip_address={{ ansible_facts.default_ipv4.address }}/24
+          static routers={{ ansible_facts.default_ipv4.gateway }}
+          static domain_name_servers={{ networking.ipv4.dns }}
+        insertafter: EOF
+      notify: Restart dhcpcd
+      when: not networking.ipv4.static
+
+    - name: Start the dhcpcd service
+      ansible.builtin.service:
+        name: dhcpcd
+        state: started
+        enabled: yes
+      when: not networking.ipv4.static
+
+    - name: Get current SSID from wpa_supplicant
+      become: true
+      ansible.builtin.shell: sed -rn 's/\sssid="(.*)"$/\1/p' /etc/wpa_supplicant/wpa_supplicant.conf
+      changed_when: false
+      register: current_wifi_ssid
+      tags:
+        - nm
+
+    - name: Get current PSK from wpa_supplicant
+      become: true
+      ansible.builtin.shell: sed -rn 's/\spsk=(.*)$/\1/p' /etc/wpa_supplicant/wpa_supplicant.conf
+      changed_when: false
+      register: current_wifi_psk
+      tags:
+        - nm
+
+    - name: Add nm connection
+      become: true
+      when: networking.ipv4.static
+      ansible.builtin.command: |
+        nmcli con add type wifi \
+          con-name wifi-{{ current_wifi_ssid.stdout }} \
+          ssid {{ current_wifi_ssid.stdout }} \
+          ifname {{ ansible_facts.default_ipv4.interface }} \
+          802-11-wireless-security.key-mgmt WPA-PSK \
+          802-11-wireless-security.psk {{ current_wifi_psk.stdout }} \
+          ipv4.method manual \
+          ipv4.gateway {{ networking.ipv4.gateway }} \
+          ipv4.addresses {{ networking.ipv4.address }}/24 \
+          ipv4.dns "{{ networking.ipv4.dns | join(' ') }}" \
+          ipv6.method ignore
+      notify: Reboot and wait
+      tags:
+        - nm
+
+    # - name: Add nmcli connection
+    #   become: true
+    #   when: networking.ipv4.static
+    #   community.general.nmcli:
+    #     type: wifi      # TODO: use current connection type from ansible_facts
+    #     conn_name: "wifi-{{ current_wifi_ssid.stdout }}"
+    #     ssid: "{{ current_wifi_ssid.stdout }}"
+    #     ifname: wlan*
+    #     autoconnect: false
+    #     wifi_sec:
+    #       auth-alg: open
+    #       key-mgmt: wpa-psk
+    #       psk: "{{ current_wifi_psk.stdout }}"
+    #     ip4: "{{ networking.ipv4.address }}"
+    #     gw4: "{{ networking.ipv4.gateway }}"
+    #     dns4: "{{ networking.ipv4.dns }}"
+    #     state: present
+    #   notify: Reboot and wait
+    #   tags:
+    #     - nm
+
+    - name: Remove dhcp related tools
+      become: true
+      ansible.builtin.apt:
+        state: absent
+        purge: true
+        name:
+          - openresolv
+          - dhcpcd5
+      when: networking.ipv4.static
+      notify: Reboot and wait

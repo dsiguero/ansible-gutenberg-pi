@@ -4,10 +4,23 @@
 
 - hosts: print_server
   roles:
-    - role: pi
+    - role: raspi-config
       become: true
+      vars:
+        ipv6: false
+
+- hosts: print_server
+  roles:
     - role: ssh
       become: true
+
+- hosts: print_server
+  roles:
+    - role: net
+      become: true
+
+- hosts: print_server
+  roles:
     - role: cups
       become: true
 
