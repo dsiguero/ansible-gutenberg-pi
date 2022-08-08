@@ -10,10 +10,12 @@
     state: started
     enabled: true
 
-- name: Add '{{ ansible_facts.user_id }}' to lpadmin group
+- name: Add '{{ ansible_facts.user_id }}' to printing groups
   ansible.builtin.user:
     name: "{{ ansible_facts.user_id }}"
-    groups: lpadmin
+    groups:
+      - lpadmin
+      - lp
     append: yes
   notify: restart cups
 
