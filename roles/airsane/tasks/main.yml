@@ -24,6 +24,7 @@
   ansible.builtin.file:
     path: "/home/{{ ansible_facts.user_id }}/AirSane/build"
     state: directory
+    mode: "0755"
 
 - name: Compile AirSane
   ansible.builtin.command: "{{ item }}"
