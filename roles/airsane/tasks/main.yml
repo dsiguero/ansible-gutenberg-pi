@@ -1,0 +1,69 @@
+---
+# tasks file for airsane
+
+- name: Install airsane build deps
+  become: true
+  ansible.builtin.package:
+    state: present
+    name:
+      - libsane-dev
+      - libjpeg-dev
+      - libpng-dev
+      - libavahi-client-dev
+      - libusb-1.*-dev
+      - git
+      - cmake
+      - g++
+
+- name: Define Airsane src folder
+  ansible.builtin.set_fact:
+    airsane_src_folder: "/home/{{ ansible_facts.user_id }}/AirSane"
+
+- name: Git checkout AirSane
+  ansible.builtin.git:
+    repo: "https://github.com/SimulPiscator/AirSane.git"
+    dest: "{{ airsane_src_folder }}"
+    version: "{{ airsane_git_sha }}"
+
+- name: Create build folder
+  ansible.builtin.file:
+    path: "{{ airsane_src_folder }}/build"
+    state: directory
+    mode: "0755"
+
+- name: Compile AirSane
+  ansible.builtin.command: "{{ item }}"
+  args:
+    chdir: "{{ airsane_src_folder }}/build"
+    creates: "{{ airsane_src_folder }}/build/airsaned"
+  with_items:
+    - "cmake .."
+    - make
+
+- name: Check whether AirSane has been installed already
+  ansible.builtin.shell: command -v airsaned
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+  changed_when: false
+  register: airsane_installed
+
+- name: Install AirSane
+  ansible.builtin.command: make install
+  become: true
+  args:
+    chdir: "{{ airsane_src_folder }}/build"
+  when: airsane_installed.rc != 0
+
+- name: Start and enable airsaned service
+  become: true
+  ansible.builtin.systemd:
+    name: airsaned
+    state: started
+    daemon_reload: yes
+    enabled: true
+
+- name: Build cleanup
+  ansible.builtin.file:
+    path: "{{ airsane_src_folder }}"
+    state: absent

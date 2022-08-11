@@ -17,3 +17,5 @@
 !net/
 !raspi_config/
 !cups/
+!sane/
+!airsane/

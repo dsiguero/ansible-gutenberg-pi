@@ -1,0 +1,43 @@
+---
+# tasks file for sane
+
+- name: Install sane
+  become: true
+  ansible.builtin.package:
+    state: present
+    name:
+      - sane
+      - sane-utils
+
+- name: Add '{{ ansible_facts.user_id }}' to groups
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_facts.user_id }}"
+    groups: "{{ item }}"
+    append: yes
+  with_items:
+    - scanner
+    - saned
+
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=918358
+- name: Fix potential libsane bug
+  become: true
+  ansible.builtin.copy:
+    src: 65-libsane.rules
+    dest: /etc/udev/rules.d/65-libsane.rules
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Find image scanners
+  ansible.builtin.command: sane-find-scanner -q
+  changed_when: false
+
+- name: List available scanners
+  ansible.builtin.command: scanimage -L
+  register: scanimage_list
+  changed_when: false
+
+- name: Current interface
+  ansible.builtin.debug:
+    var: scanimage_list.stdout_lines

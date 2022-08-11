@@ -1,0 +1,6 @@
+---
+# handlers file for airsane
+- name: Restart airsaned
+  ansible.builtin.service:
+    name: airsaned
+    state: restarted

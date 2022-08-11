@@ -1,0 +1,6 @@
+---
+# handlers file for sane
+- name: Restart saned
+  ansible.builtin.service:
+    name: saned
+    state: restarted
