@@ -17,7 +17,7 @@
 
 - name: Git checkout AirSane
   ansible.builtin.git:
-    repo: 'https://github.com/SimulPiscator/AirSane.git'
+    repo: "https://github.com/SimulPiscator/AirSane.git"
     dest: "/home/{{ ansible_facts.user_id }}/AirSane"
 
 - name: Create build folder
@@ -26,12 +26,12 @@
     state: directory
 
 - name: Compile AirSane
-  ansible.builtin.command: '{{ item }}'
+  ansible.builtin.command: "{{ item }}"
   args:
     chdir: "/home/{{ ansible_facts.user_id }}/AirSane/build"
     creates: "/home/{{ ansible_facts.user_id }}/AirSane/build/airsaned"
   with_items:
-    - 'cmake ..'
+    - "cmake .."
     - make
 
 - name: Check whether AirSane has been installed already

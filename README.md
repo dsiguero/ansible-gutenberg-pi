@@ -19,14 +19,11 @@ ansible-playbook main|update|debug_facts.yaml [--ask-pass] [--check]
 
 > :warning: **Note**: Unless you set up a key (`authorized_keys`) beforehand, Ansible will require `--ask-pass` flag in order to establish a SSH connection the first time it runs.
 
-
-## *Stack*
+## _Stack_
 
 - NetworkManager for wireless connection management (including static IP address)
 - CUPS for network printing
 - SANE + [AirSane](https://github.com/SimulPiscator/AirSane/issues) for network image acquisition
-
-
 
 ## TODO:
 
@@ -49,5 +46,3 @@ ansible-playbook main|update|debug_facts.yaml [--ask-pass] [--check]
 - [ ] drop files to network folder to print?
 - [ ] move scanned files to different location as they are created (paperless)
 - [ ] trigger scan from Home Assistant
-
-

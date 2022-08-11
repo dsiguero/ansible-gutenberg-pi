@@ -27,7 +27,7 @@
     dest: /etc/udev/rules.d/65-libsane.rules
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
 
 - name: Find image scanners
   ansible.builtin.command: sane-find-scanner -q
@@ -41,4 +41,3 @@
 - name: Current interface
   ansible.builtin.debug:
     var: scanimage_list.stdout_lines
-
