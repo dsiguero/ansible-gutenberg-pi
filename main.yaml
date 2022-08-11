@@ -29,3 +29,13 @@
 
 - name: Install Samsung ML-1660
   ansible.builtin.import_playbook: ml1660.yaml
+
+- hosts: print_server
+  roles:
+    - role: sane
+
+- hosts: print_server
+  roles:
+    - role: airsane
+  tags:
+    - airsane

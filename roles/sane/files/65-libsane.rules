@@ -1,0 +1,1 @@
+ENV{libsane_matched}=="yes", RUN+="/usr/bin/setfacl -m g:scanner:rw $env{DEVNAME}"

@@ -1,0 +1,58 @@
+---
+# tasks file for airsane
+
+- name: Install airsane build deps
+  become: true
+  ansible.builtin.package:
+    state: present
+    name:
+      - libsane-dev
+      - libjpeg-dev
+      - libpng-dev
+      - libavahi-client-dev
+      - libusb-1.*-dev
+      - git
+      - cmake
+      - g++
+
+- name: Git checkout AirSane
+  ansible.builtin.git:
+    repo: 'https://github.com/SimulPiscator/AirSane.git'
+    dest: "/home/{{ ansible_facts.user_id }}/AirSane"
+
+- name: Create build folder
+  ansible.builtin.file:
+    path: "/home/{{ ansible_facts.user_id }}/AirSane/build"
+    state: directory
+
+- name: Compile AirSane
+  ansible.builtin.command: '{{ item }}'
+  args:
+    chdir: "/home/{{ ansible_facts.user_id }}/AirSane/build"
+    creates: "/home/{{ ansible_facts.user_id }}/AirSane/build/airsaned"
+  with_items:
+    - 'cmake ..'
+    - make
+
+- name: Check whether AirSane has been installed already
+  ansible.builtin.shell: command -v airsaned
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+  changed_when: false
+  register: airsane_installed
+
+- name: Install AirSane
+  ansible.builtin.command: make install
+  become: true
+  args:
+    chdir: "/home/{{ ansible_facts.user_id }}/AirSane/build"
+  when: airsane_installed.rc != 0
+
+- name: Start and enable airsaned service
+  become: true
+  ansible.builtin.systemd:
+    name: airsaned
+    state: started
+    daemon_reload: yes
+    enabled: true

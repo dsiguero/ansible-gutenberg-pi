@@ -19,6 +19,15 @@ ansible-playbook main|update|debug_facts.yaml [--ask-pass] [--check]
 
 > :warning: **Note**: Unless you set up a key (`authorized_keys`) beforehand, Ansible will require `--ask-pass` flag in order to establish a SSH connection the first time it runs.
 
+
+## *Stack*
+
+- NetworkManager for wireless connection management (including static IP address)
+- CUPS for network printing
+- SANE + [AirSane](https://github.com/SimulPiscator/AirSane/issues) for network image acquisition
+
+
+
 ## TODO:
 
 - [x] SSH security concerns
@@ -31,6 +40,14 @@ ansible-playbook main|update|debug_facts.yaml [--ask-pass] [--check]
   - [x] android: avahi/bonjour. No SMB required
   - [ ] ios: might need airprint
 - [x] printer-specific roles/plays
-- [ ] sane?
+- [x] sane
+- [x] airsane: expose scanner through the network
+  - [ ] windows
+  - [x] macos
+  - [x] android: [Mopria Scan](https://play.google.com/store/apps/details?id=org.mopria.scan.application)
+  - [ ] ios
 - [ ] drop files to network folder to print?
-- [ ] document/scan manager
+- [ ] move scanned files to different location as they are created (paperless)
+- [ ] trigger scan from Home Assistant
+
+
