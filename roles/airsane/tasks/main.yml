@@ -15,7 +15,7 @@
       - cmake
       - g++
 
-- name: Define Airsane src folder 
+- name: Define Airsane src folder
   ansible.builtin.set_fact:
     airsane_src_folder: "/home/{{ ansible_facts.user_id }}/AirSane"
 
