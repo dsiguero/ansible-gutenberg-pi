@@ -45,7 +45,7 @@
       ansible.builtin.command: cat /etc/wpa_supplicant/wpa_supplicant.conf
       changed_when: false
       register: wpa_supplicant
-      check_mode: false         # It doesn't change anything, let it run even when in check mode
+      check_mode: false # It doesn't change anything, let it run even when in check mode
 
     - name: Set wpa_supplicant.conf wireless credentials as facts
       ansible.builtin.set_fact:
